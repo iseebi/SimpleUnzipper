@@ -13,15 +13,15 @@ struct Uncompressor {
 
   static func uncompressWithCentralDirectory(_ cdir: CentralDirectory, fromBytes bytes: UnsafePointer<UInt8>) -> Data? {
     let offsetBytes = bytes.advanced(by: Int(cdir.dataOffset))
-    let offsetMBytes = UnsafeMutablePointer<UInt8>(offsetBytes)
+    let offsetMBytes = UnsafeMutablePointer<UInt8>(mutating: offsetBytes)
     let len = Int(cdir.uncompressedSize)
-    let out = UnsafeMutablePointer<UInt8>(allocatingCapacity: len)
+    let out = UnsafeMutablePointer<UInt8>.allocate(capacity: len)
     switch cdir.compressionMethod {
     case .none:
-      out.assignFrom(offsetMBytes, count: len)
+      out.assign(from: offsetMBytes, count: len)
     case .deflate:
       var strm = z_stream()
-      let initStatus = inflateInit2_(&strm, -MAX_WBITS, (ZLIB_VERSION as NSString).utf8String, Int32(sizeof(z_stream.self)))
+      let initStatus = inflateInit2_(&strm, -MAX_WBITS, (ZLIB_VERSION as NSString).utf8String, Int32(MemoryLayout<z_stream>.size))
       if initStatus != Z_OK { out.deinitialize(); return nil }
       strm.avail_in = cdir.compressedSize
       strm.next_in = offsetMBytes

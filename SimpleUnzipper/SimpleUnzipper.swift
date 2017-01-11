@@ -33,9 +33,9 @@ public struct SimpleUnzipper {
     self.init(data: data)
   }
   
-  private let _bytes: UnsafePointer<UInt8>
+  fileprivate let _bytes: UnsafePointer<UInt8>
 
-  private let _cdirs: [String: CentralDirectory]
+  fileprivate let _cdirs: [String: CentralDirectory]
   
 }
 
