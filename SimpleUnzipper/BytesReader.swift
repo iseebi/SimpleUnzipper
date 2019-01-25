@@ -65,7 +65,7 @@ extension BytesReader {
 
   mutating func string(_ len: Int) -> String? {
     let buffp = UnsafeBufferPointer<UInt8>(start: bytes.advanced(by: index), count: len)
-    let s = String(bytes: buffp.makeIterator(), encoding: String.Encoding.utf8)
+    let s = String(bytes: buffp, encoding: String.Encoding.utf8)
     index += len
     return s
   }
